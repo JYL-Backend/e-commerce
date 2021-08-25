@@ -5,6 +5,7 @@ import com.example.userservice.dto.UserDto;
 import com.example.userservice.entity.UserEntity;
 import com.example.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -14,6 +15,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+
     @Override
     public UserDto createUser(RequestUserDto requestUserDto) {
         UserDto userDto = RequestUserDto.getUserDto(requestUserDto);
@@ -22,7 +26,7 @@ public class UserServiceImpl implements UserService {
                 .name(userDto.getName())
                 .email(userDto.getEmail())
                 .userId(userDto.getUserId())
-                .encryptedPwd(userDto.getPwd())
+                .encryptedPwd(passwordEncoder.encode(userDto.getPwd()))
                 .build();
 
         userRepository.save(entity);
