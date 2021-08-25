@@ -1,17 +1,23 @@
 package com.example.userservice.controller;
 
+import com.example.userservice.dto.RequestUserDto;
+import com.example.userservice.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
 public class UserController {
     private Environment env;
+    private UserService userService;
 
-    public UserController(Environment env) {
+    @Autowired
+    public UserController(Environment env, UserService userService) {
         this.env = env;
+        this.userService = userService;
     }
 
     @GetMapping("/health_check")
@@ -22,5 +28,11 @@ public class UserController {
     @GetMapping("/welcome")
     public String welcome(){
         return env.getProperty("greeting.message");
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity createUser(@RequestBody RequestUserDto requestUserDto){
+            userService.createUser(requestUserDto);
+            return new ResponseEntity(HttpStatus.CREATED);
     }
 }
